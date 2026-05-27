@@ -1,0 +1,21 @@
+# Data
+pandas
+
+# Embeddings
+sentence-transformers
+
+# Vector store
+chromadb
+
+# Orchestration
+langchain
+langchain-community
+
+# LLM
+anthropic
+
+# UI
+streamlit
+
+# Experiment tracking
+mlflow

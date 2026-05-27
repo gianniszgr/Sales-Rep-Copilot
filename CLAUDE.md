@@ -190,3 +190,27 @@ Signed: Jan 2024 | Salesperson: Nikos P."
 - **Scope:** Portfolio project — demo + GitHub, not live deployment
 - **Data:** Real Edenred data (usage approved)
 
+---
+
+## Folder Structure (Locked — 2026-05-27)
+
+```
+RAG Project/
+├── data/raw/           ← CSVs go here (gitignored — contains real customer data)
+├── data/processed/     ← Phase 1 aggregated output
+├── src/
+│   ├── data_prep.py        ← Phase 1
+│   ├── profile_builder.py  ← Phase 2
+│   ├── embeddings.py       ← Phase 3
+│   ├── rag_pipeline.py     ← Phase 4
+│   └── app.py              ← Phase 4 (Streamlit)
+├── chroma_db/          ← gitignored, local-persistent
+├── mlflow_runs/        ← gitignored, local-persistent
+└── docker/             ← Phase 5
+```
+
+**Rules:**
+- Never commit anything under data/raw/ — real customer data lives there
+- Never commit chroma_db/ or mlflow_runs/ — generated artifacts
+- One src/ file per phase — do not split phase logic across multiple files unless explicitly decided
+

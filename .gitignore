@@ -1,0 +1,28 @@
+# Environment
+.env
+
+# Generated artifacts
+chroma_db/
+mlflow_runs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Data (raw CSVs contain real customer data)
+data/raw/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
