@@ -78,12 +78,12 @@ Sales rep → Streamlit UI (types question)
 - `loads_enriched` — row-level loads joined with product and customer dimensions
 - `loads_monthly` — loads_enriched aggregated to one row per cus_code + product + month
 
-**Final embedding output (built in Phase 2):** one row per customer, aggregated from loads_monthly.
+**Final embedding output (built in Phase 2):** loads_monthly itself — one row per customer × product family × month.
 
 **Rules locked from this phase:**
-- Loads filtered to 2020+ only — do not change this filter without explicit decision
+- Loads filtered to 2023+ only — do not change this filter without explicit decision
 - Enrich before aggregating — dimension columns must be available in the groupby
-- loads_monthly is intermediate — do not embed it directly; roll up to customer level first
+- loads_monthly is the embedding dataset — embed it directly at monthly granularity; do not roll up to customer level
 - One src/ file per phase — data_prep.py owns Phase 1 logic only
 - Never load excluded columns: cus_fin_code, cus_ext_ref, Segment_Abbreviation__c, RFMPersonas
 
@@ -92,19 +92,26 @@ Sales rep → Streamlit UI (types question)
 ## Phase 2 — Text Profile Generation
 **Timeline:** Weekend 1, Day 1 afternoon
 
-**Goal:** Convert each aggregated customer row into a human-readable text paragraph.
+**Status: Complete (2026-06-04)**
+
+**Goal:** Convert each loads_monthly row into a human-readable text string.
 
 **Why:** This text is what gets embedded and stored. The quality of this text directly determines the quality of answers. Garbage in, garbage out.
 
 **Example output:**
 ```
-"Customer: ABC Corp | Segment: Enterprise | RFM: Champion |
-Employees: 450 | Total Orders: 23 | Avg Order Value: €4,200 |
-Last Order: March 2025 | Contract Status: Active |
-Signed: Jan 2024 | Salesperson: Nikos P."
+"Customer: PIERRE FABRE ΕΛΛΑΣ ΑΕ | Group: Pierre Fabre | Segment: Field Sales - South Greece |
+Employees: 131 | Job Type: Chemicals & Plastic | Salesperson: Ioanna Kampouridou |
+Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 ```
 
-**Output:** A list of text strings, one per customer.
+**Output:** 89,799 text strings in data/processed/customer_profiles.csv — one per customer × product family × month.
+
+**Rules locked from this phase:**
+- data_prep.ipynb is responsible for saving loads_monthly.csv to data/processed/ — profile_builder must not re-run the raw pipeline
+- profile_builder.py reads from data/processed/loads_monthly.csv as its sole input
+- Text profile format is pipe-separated — do not change to natural language sentences without explicit decision
+- customer_profiles.csv is the input to Phase 3 (embeddings) — column `text_profile` is what gets embedded
 
 ---
 
