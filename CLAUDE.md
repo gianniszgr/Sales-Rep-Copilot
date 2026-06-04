@@ -25,12 +25,14 @@ Portfolio project to close 3 critical skill gaps simultaneously:
 
 ## Data Sources
 
-| File | Key Fields |
-|---|---|
-| Customers.csv | cus_code, cus_name, Segment, RFMPersonas, NumberOfEmployees, SalesPerson |
-| Transactions.csv | cus_code, trx_date, trx_amt, vou_label, MCC |
-| Orders.csv | CustomerCode, Amount, TotalRevenue, Product, OrderType, PaymentType |
-| Contracts.csv | cus_code, cuv_contract_sign_date, cuv_closed_date, Potential, Payment |
+| File | Key Fields | Status |
+|---|---|---|
+| Customers.csv | cus_code, group_name__c, cus_name, Segment__c, Segment_Group__c, NumberOfEmployees, JobType, SalesPerson | ✓ In use |
+| Loads.csv | cus_code, ode_net_amt, vou_label, vou_code, ord_posting_date | ✓ In use (filtered 2020+) |
+| Product.csv | vou_code, vou_label, ProductFamily | ✓ In use |
+| Contracts.csv | — | ✗ File does not exist in data/raw/ — skipped |
+
+**Excluded columns (noise, not needed for RAG):** cus_fin_code, cus_ext_ref, Segment_Abbreviation__c, RFMPersonas
 
 ---
 
@@ -66,19 +68,24 @@ Sales rep → Streamlit UI (types question)
 ---
 
 ## Phase 1 — Data Preparation
-**Timeline:** Weekend 1, Day 1 morning
+**Status: Complete (2026-06-04)**
 
 **Goal:** Load all CSVs, merge on cus_code, aggregate everything per customer into one clean row.
 
 **Why:** RAG cannot work on raw database rows. One customer may have 500 transaction rows. You need one coherent summary per customer as the foundation for everything downstream.
 
-**Output:** A pandas DataFrame — one row per customer, all info aggregated.
+**Actual Output:** Two tables in notebooks/data_prep.ipynb:
+- `loads_enriched` — row-level loads joined with product and customer dimensions
+- `loads_monthly` — loads_enriched aggregated to one row per cus_code + product + month
 
-**Key decisions:**
-- Aggregate transactions: total amount, avg amount, last transaction date, count
-- Aggregate orders: total revenue, avg order value, last order date, count, most common product
-- Contracts: status (active/closed), sign date, closed date, payment type
-- Customers: segment, RFM persona, number of employees, salesperson
+**Final embedding output (built in Phase 2):** one row per customer, aggregated from loads_monthly.
+
+**Rules locked from this phase:**
+- Loads filtered to 2020+ only — do not change this filter without explicit decision
+- Enrich before aggregating — dimension columns must be available in the groupby
+- loads_monthly is intermediate — do not embed it directly; roll up to customer level first
+- One src/ file per phase — data_prep.py owns Phase 1 logic only
+- Never load excluded columns: cus_fin_code, cus_ext_ref, Segment_Abbreviation__c, RFMPersonas
 
 ---
 
