@@ -5,6 +5,32 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 
 ---
 
+## [2026-06-04] — Text Profile Generation Phase Complete
+
+### Done
+- Added save cell to notebooks/data_prep.ipynb (Section 4) — exports loads_monthly to data/processed/loads_monthly.csv (89,799 rows)
+- Generated loads_monthly.csv by running the Phase 1 pipeline: data/processed/loads_monthly.csv saved and verified
+- Generated text profiles from loads_monthly: one pipe-separated string per row covering customer identity, segment, salesperson, product family, month, revenue, and order count
+- Saved 89,799 profiles to data/processed/customer_profiles.csv
+- Populated src/profile_builder.py with clean functions (load_loads_monthly, build_text_profile, run) — loads from CSV, no raw data processing
+- Created notebooks/profile_builder.ipynb for portfolio presentation
+
+### Decisions
+- Finding: initial implementation built a customer-level rollup (one row per customer, 3,810 rows) → Decision: reverted; embedding granularity stays at loads_monthly level (one row per customer × product family × month, 89,799 rows) — this preserves temporal and product-level signals for retrieval
+- Finding: profile_builder.py was re-running the full 10M-row pipeline on every run → Decision: save loads_monthly.csv from data_prep.ipynb; profile_builder.py reads from data/processed/loads_monthly.csv directly
+- Finding: loads filter is 2023+ in actual code (not 2020+ as originally stated in CLAUDE.md) → Decision: follow the actual code; CLAUDE.md corrected
+
+### Deferred / Not Done
+- data_prep.py not yet populated — logic lives in notebooks only; script translation deferred to end of project
+- Text profile format not yet validated end-to-end against retrieval quality — will be tested in Phase 3/4
+
+### Open Questions for Next Phase
+- Which sentence-transformers model to use? (all-MiniLM-L6-v2 is the default, fast and good)
+- ChromaDB collection name and persistence path?
+- Top-N retrieval count for Phase 4?
+
+---
+
 ## [2026-06-04] — Data Preparation Phase Complete
 
 ### Done
