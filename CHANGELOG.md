@@ -5,6 +5,36 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 
 ---
 
+## [2026-06-05] — Embedding + Vector Store Phase Complete
+
+### Done
+- Populated src/embeddings.py with four functions: `load_profiles`, `embed_profiles`, `store_in_chroma`, `run`
+- Installed dependencies: chromadb==1.5.9, sentence-transformers==5.5.1
+- Embedded all 89,799 text profiles using `all-MiniLM-L6-v2` (sentence-transformers, local, no API cost)
+- Stored all vectors in a persistent ChromaDB collection `customer_profiles` at `chroma_db/` with cosine similarity metric
+- Metadata stored per vector: cus_code, cus_name, segment, product_family, month, salesperson — all available for Phase 4 answer generation
+- IDs are deterministic composite keys: `{cus_code}_{ProductFamily}_{month}` — safe to re-run with `--force-rebuild`
+- Verified retrieval with sanity check: query "PIERRE FABRE revenue January 2023" returned correct Pierre Fabre profiles
+- Script is idempotent: skips insert if collection already populated; `--force-rebuild` flag forces full rebuild
+
+### Decisions
+- Model: `all-MiniLM-L6-v2` — fast, small (22M params), good semantic quality for structured text; answered open question from Phase 2
+- Collection name: `customer_profiles` — matches the CSV name and is self-documenting
+- Cosine distance (`hnsw:space: cosine`) — standard for semantic similarity over normalized embeddings
+- Batch inserts at 5,000 rows — stays safely below ChromaDB internal limits
+- ChromaDB's own ONNX runtime handles query-time embedding in Phase 4 (downloaded on first `query_texts` call)
+
+### Deferred / Not Done
+- data_prep.py still not populated — logic lives in notebooks only; deferred to end of project
+- No MLflow tracking yet — deferred to Phase 5
+
+### Open Questions for Next Phase
+- Top-N for retrieval: start with 10, tune after seeing answer quality
+- Prompt template design: how to present retrieved profiles to Claude without exceeding context window
+- LangChain integration: use `langchain-chroma` retriever or call ChromaDB directly?
+
+---
+
 ## [2026-06-04] — Text Profile Generation Phase Complete
 
 ### Done
