@@ -118,6 +118,8 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 ## Phase 3 — Embedding + Vector Store
 **Timeline:** Weekend 1, Day 2
 
+**Status: Complete (2026-06-05)**
+
 **Goal:** Convert each text profile into a vector and store in ChromaDB.
 
 **Why:** This is the Retrieval in RAG. When a user asks a question, the system finds semantically similar profiles — not keyword matches. This is the core technical skill every GenAI JD is asking for.
@@ -127,6 +129,14 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 - `ChromaDB` — local vector database, zero infrastructure needed
 
 **Output:** A persistent ChromaDB collection with all customer profiles embedded and indexed.
+
+**Rules locked from this phase:**
+- Embedding model is `all-MiniLM-L6-v2` — do not change without explicit decision (Phase 4 query embedding must use the same model)
+- ChromaDB collection name is `customer_profiles`, path is `chroma_db/`, distance metric is cosine
+- Vector IDs are `{cus_code}_{ProductFamily}_{month}` — deterministic, safe to rebuild
+- Metadata fields per vector: cus_code, cus_name, segment, product_family, month, salesperson
+- embeddings.py is idempotent — skips insert if collection is populated; `--force-rebuild` rebuilds from scratch
+- embeddings.py reads from `data/processed/customer_profiles.csv` — do not change input source
 
 ---
 
