@@ -143,6 +143,8 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 ## Phase 4 — RAG Pipeline
 **Timeline:** Weekend 2, Day 1
 
+**Status: Complete (2026-06-13)**
+
 **Goal:** Build the question → retrieve → answer loop.
 
 **Step by step:**
@@ -156,6 +158,18 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 **Why:** This is the Augmented Generation in RAG. Claude doesn't hallucinate because it receives real retrieved data as context. This is the core architectural pattern every GenAI role requires.
 
 **Output:** A working Streamlit app where you can ask questions and get answers.
+
+**Rules locked from this phase:**
+- `rag_pipeline.py` owns all retrieval + generation logic — `app.py` only calls `ask()`
+- Embedding model for query must match Phase 3: `all-MiniLM-L6-v2`
+- Claude model: `claude-haiku-4-5-20251001` — cheapest; do not upgrade without explicit decision
+- `temperature=0` on all Claude API calls — answers must be deterministic
+- Customer name detection uses 7+ char word matching — do not lower threshold without testing false positives
+- When a customer filter is active, fetch ALL profiles via `collection.get()` (not top-N) — required for correct aggregations
+- Year filter is applied in Python after ChromaDB fetch — ChromaDB `$gte`/`$lte` only works on numeric metadata
+- Aggregations (total revenue, by month, by product family) are pre-computed in Python and injected into prompt — Claude must not re-sum from raw profiles
+- `ANTHROPIC_API_KEY` is loaded from `.env` via `python-dotenv` — never hardcode
+- Run the app with: `PYTHONPATH=src python3 -m streamlit run src/app.py`
 
 ---
 

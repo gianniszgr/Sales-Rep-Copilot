@@ -5,6 +5,42 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 
 ---
 
+## [2026-06-13] — RAG Pipeline Phase Complete
+
+### Done
+- Populated `src/rag_pipeline.py` with four functions: `get_collection`, `retrieve`, `build_prompt`, `generate_answer`, plus public `ask()` entry point
+- Populated `src/app.py` as a Streamlit UI: text area for question, Ask button, answer display, sidebar slider for top-N, toggle to show retrieved profiles
+- Installed missing dependencies: `anthropic`, `python-dotenv`
+- Added `python-dotenv` to `requirements.txt`
+- Implemented metadata filtering by customer name: detects customer name from question (exact substring + 7+ char word match), maps to ChromaDB `where` filter using `$eq` or `$in`
+- Implemented year filtering: detects 4-digit year from question (regex), applies Python-side filter on `month` field after ChromaDB fetch
+- Implemented full customer profile fetch: when customer is identified, fetches ALL matching records (not just top-N) via paginated `collection.get()` — necessary for correct aggregations
+- Implemented `_compute_aggregations()`: parses revenue and orders from profile text in Python, injects pre-computed totals (overall, by month, by product family) into the prompt
+- Set `temperature=0` on Claude API calls for deterministic answers
+- Verified retrieval: VODAFONE-ΠΑΝΑΦΟΝ 2025 returned €272,046 matching manual calculation
+- Confirmed Streamlit app launches and serves on port 8501
+
+### Decisions
+- Finding: semantic search alone returned wrong customers for exact name queries (distance ~0.53) → Decision: add metadata filtering; customer name detected from question and used as ChromaDB `where` clause
+- Finding: top-N=10 insufficient for aggregation questions — Claude only saw a sample of records → Decision: when customer filter is active, fetch ALL profiles for that customer via `collection.get()`
+- Finding: ChromaDB `$gte`/`$lte` operators only work on numeric metadata fields, not strings → Decision: apply year filter in Python after fetching from ChromaDB
+- Finding: Claude gave different totals on repeated calls for the same question → Decision: pre-compute all aggregations in Python and inject into prompt; instruct Claude to use pre-computed values only; set `temperature=0`
+- Finding: "Vodafone" matched both VODAFONE INNOVUS ΑΕ and VODAFONE-ΠΑΝΑΦΟΝ Α.Ε.Ε.Τ. → Decision: use `$in` operator when multiple customer names match
+- Finding: word-length threshold of 3 chars caused too many false-positive customer matches → Decision: raised to 7 chars minimum
+- LangChain not used — called ChromaDB and Anthropic SDK directly; simpler and sufficient for this scope
+
+### Deferred / Not Done
+- MLflow tracking — deferred to Phase 5
+- data_prep.py still not populated — deferred to end of project
+- No streaming response in Streamlit — not needed for portfolio
+
+### Open Questions for Next Phase
+- Which MLflow metrics to log: embedding model, top-N, question, answer, retrieval latency, total latency
+- Docker: include ChromaDB collection in image or mount as volume?
+- Does the app need a requirements.txt update before Dockerizing?
+
+---
+
 ## [2026-06-05] — Embedding + Vector Store Phase Complete
 
 ### Done

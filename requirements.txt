@@ -16,6 +16,7 @@ anthropic
 
 # UI
 streamlit
+python-dotenv
 
 # Experiment tracking
 mlflow
