@@ -3,7 +3,6 @@
 
 # Generated artifacts
 chroma_db/
-mlflow_runs/
 
 # Python
 __pycache__/
@@ -27,6 +26,7 @@ data/processed/*.csv
 # IDEs
 .vscode/
 .idea/
+.claude/
 
 # Internal project docs
 CLAUDE.md
