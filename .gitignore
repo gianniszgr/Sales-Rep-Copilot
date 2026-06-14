@@ -27,3 +27,8 @@ data/processed/*.csv
 # IDEs
 .vscode/
 .idea/
+
+# Internal project docs
+CLAUDE.md
+CHANGELOG.md
+end_of_phase.md
