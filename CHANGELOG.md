@@ -17,7 +17,7 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 - Implemented full customer profile fetch: when customer is identified, fetches ALL matching records (not just top-N) via paginated `collection.get()` — necessary for correct aggregations
 - Implemented `_compute_aggregations()`: parses revenue and orders from profile text in Python, injects pre-computed totals (overall, by month, by product family) into the prompt
 - Set `temperature=0` on Claude API calls for deterministic answers
-- Verified retrieval: VODAFONE-ΠΑΝΑΦΟΝ 2025 returned €272,046 matching manual calculation
+- Verified retrieval: a telecom customer's 2025 revenue returned €272,046 matching manual calculation
 - Confirmed Streamlit app launches and serves on port 8501
 
 ### Decisions
@@ -25,7 +25,7 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 - Finding: top-N=10 insufficient for aggregation questions — Claude only saw a sample of records → Decision: when customer filter is active, fetch ALL profiles for that customer via `collection.get()`
 - Finding: ChromaDB `$gte`/`$lte` operators only work on numeric metadata fields, not strings → Decision: apply year filter in Python after fetching from ChromaDB
 - Finding: Claude gave different totals on repeated calls for the same question → Decision: pre-compute all aggregations in Python and inject into prompt; instruct Claude to use pre-computed values only; set `temperature=0`
-- Finding: "Vodafone" matched both VODAFONE INNOVUS ΑΕ and VODAFONE-ΠΑΝΑΦΟΝ Α.Ε.Ε.Τ. → Decision: use `$in` operator when multiple customer names match
+- Finding: a short customer name matched multiple customers in ChromaDB → Decision: use `$in` operator when multiple customer names match
 - Finding: word-length threshold of 3 chars caused too many false-positive customer matches → Decision: raised to 7 chars minimum
 - LangChain not used — called ChromaDB and Anthropic SDK directly; simpler and sufficient for this scope
 
@@ -50,7 +50,7 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 - Stored all vectors in a persistent ChromaDB collection `customer_profiles` at `chroma_db/` with cosine similarity metric
 - Metadata stored per vector: cus_code, cus_name, segment, product_family, month, salesperson — all available for Phase 4 answer generation
 - IDs are deterministic composite keys: `{cus_code}_{ProductFamily}_{month}` — safe to re-run with `--force-rebuild`
-- Verified retrieval with sanity check: query "PIERRE FABRE revenue January 2023" returned correct Pierre Fabre profiles
+- Verified retrieval with sanity check: querying a known customer + month returned correct profiles
 - Script is idempotent: skips insert if collection already populated; `--force-rebuild` flag forces full rebuild
 
 ### Decisions
@@ -145,7 +145,7 @@ Entries are added at the top (newest first) following the end-of-phase procedure
 - Added .gitkeep to data/raw/ and data/processed/ to track empty dirs in git
 
 ### Decisions
-- Finding: data/raw/ contains real Edenred customer data → Decision: gitignore data/raw/ entirely to prevent accidental commit of sensitive data
+- Finding: data/raw/ contains real proprietary customer data → Decision: gitignore data/raw/ entirely to prevent accidental commit of sensitive data
 - Finding: chroma_db/ and mlflow_runs/ are generated artifacts → Decision: gitignore both; they are local-persistent but not committed
 - Finding: src/ files map 1:1 to phases → Decision: keep this structure so each phase has a clear, single owner file
 - Finding: we are starting directly on main → Decision: no separate setup branch; folder structure committed directly to main

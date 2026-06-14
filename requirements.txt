@@ -7,16 +7,9 @@ sentence-transformers
 # Vector store
 chromadb
 
-# Orchestration
-langchain
-langchain-community
-
 # LLM
 anthropic
 
 # UI
 streamlit
 python-dotenv
-
-# Experiment tracking
-mlflow

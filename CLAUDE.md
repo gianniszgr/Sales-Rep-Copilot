@@ -100,8 +100,8 @@ Sales rep → Streamlit UI (types question)
 
 **Example output:**
 ```
-"Customer: PIERRE FABRE ΕΛΛΑΣ ΑΕ | Group: Pierre Fabre | Segment: Field Sales - South Greece |
-Employees: 131 | Job Type: Chemicals & Plastic | Salesperson: Ioanna Kampouridou |
+"Customer: CUSTOMER_A | Group: GROUP_A | Segment: Field Sales - South Greece |
+Employees: 131 | Job Type: Chemicals & Plastic | Salesperson: SALESPERSON_A |
 Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 ```
 
@@ -215,7 +215,7 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 - [ ] Short demo video (2-3 min screen recording)
 - [ ] MLflow screenshot showing experiment runs
 - [ ] Docker instructions in README
-- [ ] CV bullet added under Edenred experience
+- [ ] CV bullet added
 
 ---
 
@@ -226,7 +226,7 @@ Product Family: EB | Month: 2023-01 | Revenue: €6,893 | Orders: 80"
 - **Vector DB:** ChromaDB (local, zero infra)
 - **UI:** Streamlit (Python only, fast to build, portfolio-ready)
 - **Scope:** Portfolio project — demo + GitHub, not live deployment
-- **Data:** Real Edenred data (usage approved)
+- **Data:** Real B2B transactional data (proprietary — not included in repo)
 
 ---
 

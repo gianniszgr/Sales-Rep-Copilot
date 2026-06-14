@@ -14,8 +14,9 @@ __pycache__/
 dist/
 build/
 
-# Data (raw CSVs contain real customer data)
+# Data (contains real customer data — not committed)
 data/raw/
+data/processed/*.csv
 
 # macOS
 .DS_Store
